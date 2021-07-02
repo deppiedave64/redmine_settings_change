@@ -130,3 +130,6 @@ dmypy.json
 
 # MySQL option files
 *.cnf
+
+# Jetbrains IDE files
+.idea/
