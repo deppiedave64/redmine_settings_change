@@ -2,6 +2,8 @@
 
 import argparse
 import os
+from typing import Sized
+
 import mysql.connector
 
 import clui
@@ -16,7 +18,7 @@ parser.add_argument("--option-file", "-o", type=clui.option_file_path, help="Pat
 parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + VERSION)
 
 
-def get_option_files():
+def get_option_files() -> Sized[str]:
     possible_option_files = [
         os.getcwd() + '/my.cnf',
         os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
@@ -28,7 +30,7 @@ def get_option_files():
     return option_files
 
 
-def main():
+def main() -> None:
     args = parser.parse_args()
 
     if 'option_file' in vars(args) and args.option_file:
