@@ -1,11 +1,28 @@
 import argparse
 import os
+from enum import Enum
 
 OPTION_FILE_NOT_FOUND = "Could not find option file: "
 
 
+class LogLevel(Enum):
+    INFO = "Info"
+    ERROR = "Error"
+
+    def __init__(self, prefix):
+        self.prefix = prefix
+
+    @property
+    def log_prefix(self) -> str:
+        return "[" + self.prefix + "]"
+
+
 def error(message: str) -> None:
-    print("Error, " + message)
+    log(message, LogLevel.ERROR)
+
+
+def log(message: str, loglevel=LogLevel.INFO) -> None:
+    print(loglevel.log_prefix + message)
 
 
 def option_file_path(path: str) -> str:
