@@ -7,6 +7,7 @@ from typing import Collection
 import mysql.connector
 
 import clui
+import db
 
 PROGRAM_NAME = "redmine-settings-change"
 VERSION = "0.1"
@@ -48,7 +49,7 @@ def main() -> None:
         exit(1)
 
     if args.command == "test":
-        print("could connect!")
+        db.test_connection(cnx)
 
 
 if __name__ == '__main__':
