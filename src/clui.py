@@ -22,7 +22,7 @@ def error(message: str) -> None:
 
 
 def log(message: str, loglevel=LogLevel.INFO) -> None:
-    print(loglevel.log_prefix + message)
+    print(loglevel.log_prefix + " " + message)
 
 
 def option_file_path(path: str) -> str:
