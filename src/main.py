@@ -5,6 +5,7 @@ import os
 from typing import Collection
 
 import mysql.connector
+from mysql.connector import errorcode
 
 from clui import error, option_file_path
 import db
@@ -42,7 +43,14 @@ def main() -> None:
             error("no valid option file found")
             exit(1)
 
-    cnx = mysql.connector.connect(option_files=option_files)
+    try:
+        cnx = mysql.connector.connect(option_files=option_files)
+    except mysql.connector.errors.Error as e:
+        if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            error("Could not connect to database, access denied")
+        elif e.errno == errorcode.ER_BAD_DB_ERROR:
+            error("Could not connect to database, database not found")
+        exit(1)
 
     if not cnx.is_connected():
         error("could not connect to mysql database")
