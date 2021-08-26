@@ -6,7 +6,7 @@ from typing import Collection
 
 import mysql.connector
 
-import clui
+from clui import error, option_file_path
 import db
 
 PROGRAM_NAME = "redmine-settings-change"
@@ -15,7 +15,7 @@ VERSION = "0.1"
 parser = argparse.ArgumentParser(description="Automatically change specific Redmine settings in a MySQL database")
 parser.add_argument("command", metavar="COMMAND", choices=["test"], help="The operation to perform. Choices include "
                                                                          "%(choices)s.")
-parser.add_argument("--option-file", "-o", type=clui.option_file_path, help="Path to a valid MySQL option file.")
+parser.add_argument("--option-file", "-o", type=option_file_path, help="Path to a valid MySQL option file.")
 parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + VERSION)
 
 
@@ -39,13 +39,13 @@ def main() -> None:
     else:
         option_files = get_option_files()
         if len(option_files) == 0:
-            clui.error("no valid option file found")
+            error("no valid option file found")
             exit(1)
 
     cnx = mysql.connector.connect(option_files=option_files)
 
     if not cnx.is_connected():
-        clui.error("could not connect to mysql database")
+        error("could not connect to mysql database")
         exit(1)
 
     if args.command == "test":
