@@ -1,6 +1,7 @@
 class Error(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str, original_exception: Exception = None):
         self.msg = message
+        self.original_exception = original_exception
 
 
 class TableNotFoundError(Error):
