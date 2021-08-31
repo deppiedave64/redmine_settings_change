@@ -14,3 +14,15 @@ class UserNotFoundError(Error):
     def __init__(self, username: str):
         message = f"Could not find user {username}"
         super().__init__(message)
+
+
+class SettingNotFoundError(Error):
+    def __init__(self, setting: str):
+        message = f"Could not find the setting '{setting}' in this database entry"
+        super().__init__(message)
+
+
+class IntegerConversionError(Error):
+    def __init__(self, value: str, original_exception: Exception = None):
+        message = f"Value '{value}' could not be converted to an integer"
+        super().__init__(message, original_exception)
