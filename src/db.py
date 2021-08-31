@@ -8,6 +8,7 @@ USER_PREFERENCES = 'user_preferences'
 
 SHOW_TABLES = 'SHOW TABLES'
 GET_USER_PREFERENCES = 'SELECT user_preferences.others FROM user_preferences WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
+SET_USER_PREFERENCES = 'UPDATE user_preferences SET user_preferences.others="{}" WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
 GET_USER_ID = 'SELECT users.id FROM users WHERE users.login="{}"'
 
 
@@ -41,3 +42,10 @@ def get_user_preferences(cursor: MySQLCursorAbstract, username: str) -> str:
     cursor.execute(GET_USER_PREFERENCES.format(username))
     result: list = cursor.fetchall()
     return result[0][0]
+
+
+def set_user_preferences(cursor: MySQLCursorAbstract, username: str, value: str) -> None:
+    assert_table_exists(cursor, USER_PREFERENCES)
+    assert_user_exists(cursor, username)
+    cursor.execute(SET_USER_PREFERENCES.format(value, username))
+    cursor.fetchall()
