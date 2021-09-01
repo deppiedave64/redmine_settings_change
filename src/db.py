@@ -11,7 +11,6 @@ SHOW_TABLES = 'SHOW TABLES'
 GET_USER_PREFERENCES = 'SELECT user_preferences.others FROM user_preferences WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
 SET_USER_PREFERENCES = 'UPDATE user_preferences SET user_preferences.others="{}" WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
 GET_USERS = 'SELECT users.login FROM users'
-GET_USER_ID = 'SELECT users.id FROM users WHERE users.login="{}"'
 
 
 def test_connection(cnx: MySQLConnectionAbstract) -> None:
