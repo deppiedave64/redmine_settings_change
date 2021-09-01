@@ -10,6 +10,7 @@ USER = 'user'
 SHOW_TABLES = 'SHOW TABLES'
 GET_USER_PREFERENCES = 'SELECT user_preferences.others FROM user_preferences WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
 SET_USER_PREFERENCES = 'UPDATE user_preferences SET user_preferences.others="{}" WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
+GET_USERS = 'SELECT users.login FROM users'
 GET_USER_ID = 'SELECT users.id FROM users WHERE users.login="{}"'
 
 
@@ -28,6 +29,12 @@ def assert_table_exists(cursor: MySQLCursorAbstract, table: str) -> None:
         if table in row:
             return
     raise exception.TableNotFoundError(table)
+
+
+def get_user_list(cursor: MySQLCursorAbstract) -> list:
+    assert_table_exists(cursor, USER)
+    cursor.execute(GET_USERS)
+    return [t[0] for t in cursor.fetchall()]
 
 
 def assert_user_exists(cursor: MySQLCursorAbstract, username: str) -> None:
