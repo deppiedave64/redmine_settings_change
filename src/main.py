@@ -7,8 +7,8 @@ from typing import Collection
 import mysql.connector
 from mysql.connector import errorcode
 
-from clui import error, option_file_path
 import db
+from clui import error, option_file_path
 
 PROGRAM_NAME = "redmine-settings-change"
 VERSION = "0.1"
