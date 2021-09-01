@@ -38,9 +38,7 @@ def get_user_list(cursor: MySQLCursorAbstract) -> list:
 
 
 def assert_user_exists(cursor: MySQLCursorAbstract, username: str) -> None:
-    cursor.execute(GET_USER_ID.format(username))
-    result: list = cursor.fetchall()
-    if len(result) == 0:
+    if username not in get_user_list(cursor):
         raise exception.UserNotFoundError(username)
 
 
