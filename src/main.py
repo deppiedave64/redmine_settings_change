@@ -13,26 +13,27 @@ from clui import error, option_file_path
 PROGRAM_NAME = "redmine-settings-change"
 VERSION = "0.1"
 
-parser = argparse.ArgumentParser(description="Automatically change specific Redmine settings in a MySQL database")
-parser.add_argument("command", metavar="COMMAND", choices=["test"], help="The operation to perform. Choices include "
-                                                                         "%(choices)s.")
-parser.add_argument("--option-file", "-o", type=option_file_path, help="Path to a valid MySQL option file.")
-parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + VERSION)
-
 
 def get_option_files() -> Collection[str]:
     possible_option_files = [
         os.getcwd() + '/my.cnf',
         os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
     ]
-    option_files = []
+    existing_option_files = []
     for file in possible_option_files:
         if os.path.exists(file):
-            option_files.append(file)
-    return option_files
+            existing_option_files.append(file)
+    return existing_option_files
 
 
-def main() -> None:
+parser = argparse.ArgumentParser(description="Automatically change specific Redmine settings in a MySQL database")
+parser.add_argument("--option-file", "-o", type=option_file_path, help="Path to a valid MySQL option file.")
+parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + VERSION)
+
+subparsers = parser.add_subparsers(help="Operation to execute", dest='command')
+parser_test = subparsers.add_parser("test", help="Test database connection")
+
+if __name__ == '__main__':
     args = parser.parse_args()
 
     if 'option_file' in vars(args) and args.option_file:
@@ -44,7 +45,7 @@ def main() -> None:
             exit(1)
 
     try:
-        cnx = mysql.connector.connect(option_files=option_files)
+        connection = mysql.connector.connect(option_files=option_files)
     except mysql.connector.errors.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             error("Could not connect to database, access denied")
@@ -52,13 +53,12 @@ def main() -> None:
             error("Could not connect to database, database not found")
         exit(1)
 
-    if not cnx.is_connected():
+    if not connection.is_connected():
         error("could not connect to mysql database")
         exit(1)
 
-    if args.command == "test":
-        db.test_connection(cnx)
-
-
-if __name__ == '__main__':
-    main()
+    if args.command == 'test':
+        db.test_connection(connection)
+    else:
+        error("No command selected")
+        exit(1)
