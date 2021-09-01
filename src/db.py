@@ -33,7 +33,7 @@ def assert_table_exists(cursor: MySQLCursorAbstract, table: str) -> None:
 def get_user_list(cursor: MySQLCursorAbstract) -> list:
     assert_table_exists(cursor, USERS)
     cursor.execute(GET_USERS)
-    return [t[0] for t in cursor.fetchall()]
+    return [t[0] for t in cursor.fetchall() if t[0] != '']  # Discard anonymous users
 
 
 def assert_user_exists(cursor: MySQLCursorAbstract, username: str) -> None:
