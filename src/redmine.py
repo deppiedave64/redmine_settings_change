@@ -1,8 +1,9 @@
 import re
+
 from mysql.connector.cursor import MySQLCursorAbstract
 
-from exception import SettingNotFoundError, IntegerConversionError
 from db import get_user_list, get_user_preferences, set_user_preferences
+from exception import IntegerConversionError, SettingNotFoundError
 
 RECENTLY_USED_PROJECTS_REGEX = r'^:recently_used_projects: (\d+)$'
 RECENTLY_USED_PROJECTS_REPLACEMENT = ':recently_used_projects: {}'

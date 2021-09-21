@@ -9,6 +9,8 @@ from mysql.connector import errorcode
 
 import db
 from clui import error, option_file_path
+from exception import Error
+from redmine import set_recently_used_projects_for_all_users
 
 PROGRAM_NAME = "redmine-settings-change"
 VERSION = "0.1"
@@ -33,6 +35,10 @@ parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + 
 subparsers = parser.add_subparsers(help="Operation to execute", dest='command')
 parser_test = subparsers.add_parser("test", help="Test database connection")
 
+parser_set = subparsers.add_parser("set", help="Set some setting's value for all users")
+parser_set.add_argument("setting", choices=["recently_used_projects"], help="The name of the setting to be changed")
+parser_set.add_argument("value", help="The new value for the selected setting")
+
 if __name__ == '__main__':
     args = parser.parse_args()
 
@@ -51,6 +57,8 @@ if __name__ == '__main__':
             error("Could not connect to database, access denied")
         elif e.errno == errorcode.ER_BAD_DB_ERROR:
             error("Could not connect to database, database not found")
+        else:
+            error(e.msg)
         exit(1)
 
     if not connection.is_connected():
@@ -59,6 +67,21 @@ if __name__ == '__main__':
 
     if args.command == 'test':
         db.test_connection(connection)
+    if args.command == 'set':
+        if args.setting == 'recently_used_projects':
+            try:
+                value = int(args.value)
+            except ValueError:
+                error(f"recently_used_projects must be set to a valid integer value")
+                exit(1)
+
+            try:
+                set_recently_used_projects_for_all_users(connection.cursor(), args.value)
+            except Error as e:
+                error(e.msg)
+                exit(1)
+
+            connection.commit()
     else:
         error("No command selected")
         exit(1)
