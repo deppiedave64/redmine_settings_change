@@ -1,0 +1,35 @@
+= redmine_settings_change
+
+The goal of this script is to directly edit the entries of the MySQL database of a Redmine installation in order to set specific user preferences for all users, instead of having each user set them individually.
+Currently two preferences are supported: 'Number of recently used projects in jump box' and 'Issue's history default tab'.
+
+The scripts help page explains the usage:
+
+....
+usage: main.py [-h] [--option-file OPTION_FILE] [--version] {test,set} ...
+
+Automatically change specific Redmine settings in a MySQL database
+
+positional arguments:
+  {test,set}            Operation to execute
+    test                Test database connection
+    set                 Set some setting's value for all users
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --option-file OPTION_FILE, -o OPTION_FILE
+                        Path to a valid MySQL option file.
+  --version             show program's version number and exit
+....
+
+....
+usage: main.py set [-h] {recently_used_projects,history_default_tab} value
+
+positional arguments:
+  {recently_used_projects,history_default_tab}
+                        The name of the setting to be changed
+  value                 The new value for the selected setting
+
+optional arguments:
+  -h, --help            show this help message and exit
+....
