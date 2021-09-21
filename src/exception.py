@@ -26,3 +26,8 @@ class IntegerConversionError(Error):
     def __init__(self, value: str, original_exception: Exception = None):
         message = f"Value '{value}' could not be converted to an integer"
         super().__init__(message, original_exception)
+
+
+class SettingsValueError(Error):
+    def __init__(self, message: str):
+        super().__init__(message)

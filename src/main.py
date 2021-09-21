@@ -10,7 +10,7 @@ from mysql.connector import errorcode
 import db
 from clui import error, option_file_path
 from exception import Error
-from redmine import set_recently_used_projects_for_all_users
+from redmine import set_history_default_tab_for_all_users, set_recently_used_projects_for_all_users
 
 PROGRAM_NAME = "redmine-settings-change"
 VERSION = "0.1"
@@ -36,7 +36,9 @@ subparsers = parser.add_subparsers(help="Operation to execute", dest='command')
 parser_test = subparsers.add_parser("test", help="Test database connection")
 
 parser_set = subparsers.add_parser("set", help="Set some setting's value for all users")
-parser_set.add_argument("setting", choices=["recently_used_projects"], help="The name of the setting to be changed")
+parser_set.add_argument("setting", choices=["recently_used_projects", "history_default_tab"], help="The name of the "
+                                                                                                   "setting to be "
+                                                                                                   "changed")
 parser_set.add_argument("value", help="The new value for the selected setting")
 
 if __name__ == '__main__':
@@ -82,6 +84,14 @@ if __name__ == '__main__':
                 exit(1)
 
             connection.commit()
+        if args.setting == 'history_default_tab':
+            try:
+                set_history_default_tab_for_all_users(connection.cursor(), args.value)
+            except Error as e:
+                error(e.msg)
+                exit(1)
+            connection.commit()
+
     else:
         error("No command selected")
         exit(1)
