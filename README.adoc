@@ -3,7 +3,13 @@
 The goal of this script is to directly edit the entries of the MySQL database of a Redmine installation in order to set specific user preferences for all users, instead of having each user set them individually.
 Currently two preferences are supported: 'Number of recently used projects in jump box' and 'Issue's history default tab'.
 
-The scripts help page explains the usage:
+== Setup
+
+Optionally create a venv, then install all requirements using `pip3 intall -r requirements.txt`.
+
+== Usage
+
+The script's help page explains the usage:
 
 ....
 usage: main.py [-h] [--option-file OPTION_FILE] [--version] {test,set} ...
