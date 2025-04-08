@@ -1,5 +1,8 @@
+from typing import Optional
+
+
 class Error(Exception):
-    def __init__(self, message: str, original_exception: Exception = None):
+    def __init__(self, message: str, original_exception: Optional[Exception] = None):
         self.msg = message
         self.original_exception = original_exception
 
@@ -23,7 +26,7 @@ class SettingNotFoundError(Error):
 
 
 class IntegerConversionError(Error):
-    def __init__(self, value: str, original_exception: Exception = None):
+    def __init__(self, value: str, original_exception: Optional[Exception] = None):
         message = f"Value '{value}' could not be converted to an integer"
         super().__init__(message, original_exception)
 
