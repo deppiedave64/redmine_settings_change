@@ -4,13 +4,21 @@ from mysql.connector.cursor import MySQLCursorAbstract
 import exception
 from clui import log
 
-USER_PREFERENCES = 'user_preferences'
-USERS = 'users'
+USER_PREFERENCES = "user_preferences"
+USERS = "users"
 
-SHOW_TABLES = 'SHOW TABLES'
-GET_USER_PREFERENCES = 'SELECT user_preferences.others FROM user_preferences WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
-SET_USER_PREFERENCES = 'UPDATE user_preferences SET user_preferences.others="{}" WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
-GET_USERS = 'SELECT users.login FROM users'
+SHOW_TABLES = "SHOW TABLES"
+GET_USER_PREFERENCES = (
+    "SELECT user_preferences.others "
+    "FROM user_preferences "
+    'WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
+)
+SET_USER_PREFERENCES = (
+    "UPDATE user_preferences "
+    'SET user_preferences.others="{}" '
+    'WHERE user_preferences.user_id=(SELECT users.id FROM users WHERE users.login="{}")'
+)
+GET_USERS = "SELECT users.login FROM users"
 
 
 def test_connection(cnx: MySQLConnectionAbstract) -> None:
@@ -33,7 +41,7 @@ def assert_table_exists(cursor: MySQLCursorAbstract, table: str) -> None:
 def get_user_list(cursor: MySQLCursorAbstract) -> list:
     assert_table_exists(cursor, USERS)
     cursor.execute(GET_USERS)
-    return [t[0] for t in cursor.fetchall() if t[0] != '']  # Discard anonymous users
+    return [t[0] for t in cursor.fetchall() if t[0] != ""]  # Discard anonymous users
 
 
 def assert_user_exists(cursor: MySQLCursorAbstract, username: str) -> None:
