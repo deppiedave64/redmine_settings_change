@@ -10,6 +10,7 @@ from mysql.connector import errorcode
 import db
 from clui import error, option_file_path
 from exception import Error
+from helpdesk import change_helpdesk_setting
 from redmine import set_history_default_tab_for_all_users, set_recently_used_projects_for_all_users
 
 PROGRAM_NAME = "redmine-settings-change"
@@ -18,8 +19,8 @@ VERSION = "0.1"
 
 def get_option_files() -> Collection[str]:
     possible_option_files = [
-        os.getcwd() + '/my.cnf',
-        os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
+        os.getcwd() + "/my.cnf",
+        os.path.dirname(os.path.abspath(__file__)) + "/my.cnf",
     ]
     existing_option_files = []
     for file in possible_option_files:
@@ -30,21 +31,27 @@ def get_option_files() -> Collection[str]:
 
 parser = argparse.ArgumentParser(description="Automatically change specific Redmine settings in a MySQL database")
 parser.add_argument("--option-file", "-o", type=option_file_path, help="Path to a valid MySQL option file.")
-parser.add_argument("--version", action='version', version=PROGRAM_NAME + " " + VERSION)
+parser.add_argument("--version", action="version", version=PROGRAM_NAME + " " + VERSION)
 
-subparsers = parser.add_subparsers(help="Operation to execute", dest='command')
+subparsers = parser.add_subparsers(help="Operation to execute", dest="command")
 parser_test = subparsers.add_parser("test", help="Test database connection")
 
 parser_set = subparsers.add_parser("set", help="Set some setting's value for all users")
-parser_set.add_argument("setting", choices=["recently_used_projects", "history_default_tab"], help="The name of the "
-                                                                                                   "setting to be "
-                                                                                                   "changed")
+parser_set.add_argument(
+    "setting",
+    choices=["recently_used_projects", "history_default_tab"],
+    help="The name of the " "setting to be " "changed",
+)
 parser_set.add_argument("value", help="The new value for the selected setting")
 
-if __name__ == '__main__':
+parser_helpdesk = subparsers.add_parser("helpdesk", help="View or change helpdesk settings.")
+parser_helpdesk.add_argument("key", help="The settings key to change for all projects.")
+parser_helpdesk.add_argument("value", help="The settings value to set for all projects.")
+
+if __name__ == "__main__":
     args = parser.parse_args()
 
-    if 'option_file' in vars(args) and args.option_file:
+    if "option_file" in vars(args) and args.option_file:
         option_files: Collection[str] = [args.option_file]
     else:
         option_files = get_option_files()
@@ -67,10 +74,10 @@ if __name__ == '__main__':
         error("could not connect to mysql database")
         exit(1)
 
-    if args.command == 'test':
+    if args.command == "test":
         db.test_connection(connection)
-    if args.command == 'set':
-        if args.setting == 'recently_used_projects':
+    if args.command == "set":
+        if args.setting == "recently_used_projects":
             try:
                 value = int(args.value)
             except ValueError:
@@ -84,13 +91,25 @@ if __name__ == '__main__':
                 exit(1)
 
             connection.commit()
-        if args.setting == 'history_default_tab':
+        if args.setting == "history_default_tab":
             try:
                 set_history_default_tab_for_all_users(connection.cursor(), args.value)
             except Error as e:
                 error(e.msg)
                 exit(1)
             connection.commit()
+
+    if args.command == "helpdesk":
+        try:
+            cnx = connection.cursor()
+            helpdesk_settings = db.get_helpdesk_settings(cnx)
+            helpdesk_settings = change_helpdesk_setting(helpdesk_settings, args.key, args.value)
+            db.set_helpdesk_settings(cnx, helpdesk_settings)
+        except Error as e:
+            error(e.msg)
+            exit(1)
+
+        connection.commit()
 
     else:
         error("No command selected")
